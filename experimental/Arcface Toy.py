@@ -12,21 +12,29 @@
 # In[1]:
 
 
-from fastai.core import *
-from fastai.vision import *
-from fastai.datasets import *
+from fastai import *
+from fastai.vision.all import *
 
+# from pathlib import Path
+# from torch import *
+# from fastai import aug_transforms
+# from fastai.datasets import *
+import fastai
+print(fastai.__version__)
 
 # In[2]:
 
-
-get_ipython().system('pwd')
+path = untar_data(URLs.MNIST_TINY)
+dls = ImageDataLoaders.from_folder(path, img_cls=PILImageBW)
+testdata = ImageDataLoaders.from_folder(path, valid='test')
+traindata = ImageDataLoaders.from_folder(path, train='train')
+# get_ipython().system('pwd')
 
 
 # In[3]:
 
 
-path = untar_data(URLs.MNIST, dest="./data/mnist")
+# path = untar_data(URLs.MNIST)
 
 
 # In[4]:
@@ -38,7 +46,7 @@ path
 # In[5]:
 
 
-path = Path('../data/mnist/')
+# path = Path('../data/mnist/')
 
 
 # In[6]:
@@ -50,13 +58,13 @@ path.ls()
 # In[7]:
 
 
-print(len((path/'training').ls()));(path/'training').ls()
+print(len((path/'training').ls()));print((path/'training').ls())
 
 
 # In[8]:
 
 
-print(len((path/'testing').ls()));(path/'testing').ls()
+print(len((path/'testing').ls()));print((path/'testing').ls())
 
 
 # In[9]:
@@ -77,9 +85,12 @@ for p in (path/'training').ls():
 # In[10]:
 
 
-tfms = get_transforms(do_flip=False)
-testdata = (ImageItemList.from_folder(path/'testing'))        
-data = (ImageItemList.from_folder(path/'training')    
+tfms = aug_transforms(do_flip=False)
+path = untar_data(URLs.MNIST)
+pathstr = Path(path/'testing')
+
+testdata = ImageDataLoaders.from_folder(pathstr)      
+data = (ImageDataLoaders.from_df(path/'training/')    
     .random_split_by_pct(0.05)
     .label_from_folder()
     .add_test(testdata)         # only takes single 'label'      
